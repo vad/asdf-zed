@@ -51,9 +51,11 @@ get_release_nugget() {
 
   case ${platform}_${arch} in
   linux_*)
-    nugget="${platform}_${arch}_gnu" ;;
+    nugget="${platform}_${arch}_gnu"
+    ;;
   *)
     nugget="${platform}_${arch}"
+    ;;
   esac
 
   echo "${nugget}"
