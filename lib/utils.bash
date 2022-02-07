@@ -39,7 +39,7 @@ download_release() {
   local version filename url os_type libc
   version="$1"
   filename="$2"
-  [[ "$(uname -s)" == "Linux" ]] && os_type="linux" || os_type="osx"
+  [[ "$(uname -s)" == "Linux" ]] && os_type="linux" || os_type="darwin"
   [[ "$os_type" == "linux" ]] && libc="_gnu" || libc=""
 
   url="$GH_REPO/releases/download/v${version}/zed_${version}_${os_type}_amd64${libc}.tar.gz"
