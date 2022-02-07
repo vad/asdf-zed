@@ -35,14 +35,36 @@ list_all_versions() {
   list_github_tags
 }
 
+get_arch() {
+  uname -m | tr '[:upper:]' '[:lower:]'
+}
+
+get_platform() {
+  uname | tr '[:upper:]' '[:lower:]'
+}
+
+get_release_nugget() {
+  local nugget arch platform
+  platform="$(get_platform)"
+  arch="$(get_arch)"
+  [[ "${arch}" == "x86_64" ]] && arch="amd64"
+
+  case ${platform}_${arch} in
+  linux_*)
+    nugget="${platform}_${arch}_gnu" ;;
+  *)
+    nugget="${platform}_${arch}"
+  esac
+
+  echo "${nugget}"
+}
+
 download_release() {
-  local version filename url os_type libc
+  local version filename url
   version="$1"
   filename="$2"
-  [[ "$(uname -s)" == "Linux" ]] && os_type="linux" || os_type="darwin"
-  [[ "$os_type" == "linux" ]] && libc="_gnu" || libc=""
 
-  url="$GH_REPO/releases/download/v${version}/zed_${version}_${os_type}_amd64${libc}.tar.gz"
+  url="$GH_REPO/releases/download/v${version}/zed_${version}_$(get_release_nugget).tar.gz"
 
   echo "* Downloading $TOOL_NAME release $version..."
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
