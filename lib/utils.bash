@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for zed.
 GH_REPO="https://github.com/authzed/zed"
 TOOL_NAME="zed"
 TOOL_TEST="zed version"
@@ -37,12 +36,13 @@ list_all_versions() {
 }
 
 download_release() {
-  local version filename url
+  local version filename url os_type libc
   version="$1"
   filename="$2"
+  [[ "$(uname -s)" == "Linux" ]] && os_type="linux" || os_type="osx"
+  [[ "$os_type" == "linux" ]] && libc="_gnu" || libc=""
 
-  # TODO: Adapt the release URL convention for zed
-  url="$GH_REPO/archive/v${version}.tar.gz"
+  url="$GH_REPO/releases/download/v${version}/zed_${version}_${os_type}_amd64${libc}.tar.gz"
 
   echo "* Downloading $TOOL_NAME release $version..."
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -58,8 +58,8 @@ install_version() {
   fi
 
   (
-    mkdir -p "$install_path"
-    cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+    mkdir -p "$install_path/bin"
+    cp -r "$ASDF_DOWNLOAD_PATH"/zed "$install_path/bin"
 
     # TODO: Asert zed executable exists.
     local tool_cmd
